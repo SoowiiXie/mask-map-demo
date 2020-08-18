@@ -40,6 +40,8 @@ export default {
   name: 'App',
   // 製作元件
   data: () => ({
+    // 空陣列 data
+    data: [],
     cityName,
     select: {
       // 筆者有改過下載的區域資料，故 city 是簡寫的台北市，正常下載是臺北市
@@ -47,7 +49,18 @@ export default {
       area: '中正區',
     },
   }),
-  // ...
+
+  components: {
+  },
+  mounted() {
+    const api = 'https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json';
+    this.$http.get(api).then((response) => {
+      // 將結果印出來看看
+      console.log(response);
+      // 將空陣列 data 指定為遠端獲得的資料，資料僅需取得藥局資訊即可
+      this.data = response.data.features;
+    });
+  },
 };
 
 </script>
