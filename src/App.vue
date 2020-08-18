@@ -33,8 +33,14 @@
 </template>
 
 <script>
+// L 代表 Leaflet
+import L from 'leaflet';
+
 // 導入內部檔案
 import cityName from './assets/cityName.json';
+
+// 設定空物件
+let openStreetMap = {};
 
 export default {
   name: 'App',
@@ -49,7 +55,21 @@ export default {
       area: '中正區',
     },
   }),
-
+  computed: {
+    pharmacies() {
+      return this.data.filter((pharmacy) => {
+        if (!this.select.area) {
+          return pharmacy.properties.county === this.select.city;
+        }
+        return pharmacy.properties.town === this.select.area;
+      });
+    },
+  },
+  watch: {
+    pharmacies(value) {
+      console.log(value);
+    },
+  },
   components: {
   },
   mounted() {
@@ -60,9 +80,20 @@ export default {
       // 將空陣列 data 指定為遠端獲得的資料，資料僅需取得藥局資訊即可
       this.data = response.data.features;
     });
+
+    openStreetMap = L.map('map', {
+      center: [25.0313775, 121.5148631],
+      // 可以嘗試改變 zoom 的數值
+      // 筆者嘗試後覺得 18 的縮放比例是較適當的查詢範圍
+      zoom: 19,
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      maxZoom: 19,
+    }).addTo(openStreetMap);
   },
 };
-
 </script>
 
 <style lang="scss">
