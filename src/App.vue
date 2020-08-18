@@ -67,10 +67,23 @@ export default {
   },
   watch: {
     pharmacies(value) {
+      // 當選單的值發生變化，就會執行 updateMap(); 方法更新地圖標記
       console.log(value);
+      this.updateMap();
     },
   },
   components: {
+  },
+  methods: {
+    updateMap() {
+      this.pharmacies.forEach((pharmacy) => {
+        // 透過藥局經緯度疊加標記
+        L.marker([
+          pharmacy.geometry.coordinates[1],
+          pharmacy.geometry.coordinates[0],
+        ]).addTo(openStreetMap);
+      });
+    },
   },
   mounted() {
     const api = 'https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json';
