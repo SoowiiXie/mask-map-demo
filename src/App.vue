@@ -76,12 +76,24 @@ export default {
   },
   methods: {
     updateMap() {
+      // clear markers
+      openStreetMap.eachLayer((layer) => {
+        if (layer instanceof L.Marker) {
+          openStreetMap.removeLayer(layer);
+        }
+      });
+
+      // add markers
       this.pharmacies.forEach((pharmacy) => {
         // 透過藥局經緯度疊加標記
         L.marker([
           pharmacy.geometry.coordinates[1],
           pharmacy.geometry.coordinates[0],
-        ]).addTo(openStreetMap);
+        ]).addTo(openStreetMap).bindPopup(`<p><strong style="font-size: 20px;">${pharmacy.properties.name}</strong></p>
+          <strong style="font-size: 16px; color: #d45345;">口罩剩餘：成人 - ${pharmacy.properties.mask_adult ? `${pharmacy.properties.mask_adult} 個` : '未取得資料'} / 兒童 - ${pharmacy.properties.mask_child ? `${pharmacy.properties.mask_child} 個` : '未取得資料'}</strong><br>
+          地址: ${pharmacy.properties.address}<br>
+          電話: ${pharmacy.properties.phone}<br>
+          <small>最後更新時間: ${pharmacy.properties.updated}</small>`);
       });
     },
   },
